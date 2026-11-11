@@ -147,6 +147,7 @@ export class MiniEmitter<Events extends { [K in keyof Events]: readonly unknown[
    * @en Dispatch an event to its listeners.
    * @param event Event name.
    * @param args Event arguments.
+   * @throws Rethrows any exception thrown by a listener and stops dispatching the current event.
    */
   protected emit<K extends keyof Events>(event: K, ...args: Events[K]): void {
     const listeners = this.listenerMap;

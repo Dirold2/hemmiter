@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { MiniEmitter } from "../src/index.js";
 
 type Events = {
@@ -19,6 +19,58 @@ class TestEmitter extends MiniEmitter<Events> {
 }
 
 describe("MiniEmitter", () => {
+  it("preserves compile-time event types", () => {
+    const emitter = new TestEmitter();
+
+    emitter.on("value", (value) => {
+      expectTypeOf(value).toEqualTypeOf<number>();
+    });
+    emitter.on("done", () => {});
+
+    if (false) {
+      // @ts-expect-error Event names must be declared in Events.
+      emitter.on("missing", () => {});
+      // @ts-expect-error Listener arguments must match the event tuple.
+      emitter.on("value", (value: string) => {});
+    }
+  });
+
+  it("dispatches recursive emits independently", () => {
+    const emitter = new TestEmitter();
+    const calls: string[] = [];
+    let recursive = true;
+
+    emitter.on("done", () => {
+      calls.push("first");
+      if (recursive) {
+        recursive = false;
+        emitter.publishDone();
+      }
+    });
+    emitter.on("done", () => calls.push("second"));
+
+    emitter.publishDone();
+
+    expect(calls).toEqual(["first", "first", "second", "second"]);
+  });
+
+  it("propagates listener exceptions and stops the current dispatch", () => {
+    const emitter = new TestEmitter();
+    const error = new Error("listener failed");
+    let followingListenerCalled = false;
+    const followingListener = () => {
+      followingListenerCalled = true;
+    };
+
+    emitter.on("done", () => {
+      throw error;
+    });
+    emitter.on("done", followingListener);
+
+    expect(() => emitter.publishDone()).toThrow(error);
+    expect(followingListenerCalled).toBe(false);
+  });
+
   it("dispatches typed events and supports aliases", () => {
     const emitter = new TestEmitter();
     const values: number[] = [];

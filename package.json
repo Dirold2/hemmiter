@@ -1,6 +1,6 @@
 {
   "name": "hemmiter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "description": "A tiny type-safe event emitter for TypeScript.",
   "keywords": [
@@ -25,7 +25,7 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "dist/index.сjs",
+  "main": "dist/index.cjs",
   "module": "./dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

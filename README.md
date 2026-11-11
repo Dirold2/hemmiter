@@ -59,7 +59,7 @@ Event names and listener arguments are inferred and checked from the `Events` ty
 - `listeners(event)` — get a snapshot of the listeners registered for an event.
 - `listenerCount(event)` — get the number of listeners registered for an event.
 - `removeAllListeners(event?)` — remove listeners for one event or all events.
-- `emit(event, ...args)` — dispatch an event. `emit` is `protected`, allowing subclasses to control event emission.
+- `emit(event, ...args)` — dispatch an event. `emit` is `protected`, allowing subclasses to control event emission. If a listener throws, its exception is rethrown and the remaining listeners for that dispatch are not invoked.
 
 ## Type-safe events
 
